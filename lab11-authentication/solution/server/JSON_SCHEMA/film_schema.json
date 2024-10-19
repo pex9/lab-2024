@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id" : "http://www.my-schema.com/film_schema.json",
+    "title": "User",
+    "description": "JSON Schema for FILM data structures",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "path to the JSON Schema to use for the validation of the JSON data structure"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "title":{
+            "type": "string"
+        },
+        "owner": {
+            "type": "integer"
+        },
+        "private": {
+            "type": "boolean",
+            "default": "true"
+        },  
+        "watchdate": {
+            "type": "string",
+            "format": "date"
+        },
+        "rating": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+        },
+        "favorite": {
+            "type": "boolean",
+            "default": "false"
+        }
+    },
+    "required": ["id","title","owner","private"],
+    "dependencies": {
+      "watchdate": {
+        "properties": {
+          "private": { "const": true }
+        }
+      },
+      "rating": {
+        "properties": {
+          "private": { "const": true }
+        }
+      },
+      "favorite": {
+        "properties": {
+          "private": { "const": true }
+        }
+      }
+    }
+  }

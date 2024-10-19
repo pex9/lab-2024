@@ -1,0 +1,6 @@
+{
+    "$schema": "../JSON_SCHEMA/review_schema.json",
+    "reviewerId": 0,
+    "filmId": 0,
+    "completed": false
+}

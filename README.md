@@ -15,3 +15,6 @@ Laboratories solutions (under development) for the course of _Web Applications I
 - Lab 09: [API Integration (part 1)](https://github.com/polito-webapp1/lab-2024/tree/main/lab09-client-server-I)
 - Lab 10: [API Integration (part 2)](https://github.com/polito-webapp1/lab-2024/tree/main/lab10-client-server-II)
 - Lab 11: [Authentication](https://github.com/polito-webapp1/lab-2024/tree/main/lab11-authentication)
+
+Cloning the repository to work with labs of distributed system programming
+- Lab 01: [Getting Started writing json schema and creation of APIs in server directory](https://github.com/polito-webapp1/lab-2024/tree/main/lab11-authentication)

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id" : "http://www.my-schema.com/user_schema.json",
+    "title": "User",
+    "description": "JSON Schema for User data structures",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "path to the JSON Schema to use for the validation of the JSON data structure"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "name":{
+            "type": "string"
+        },
+        "email": {
+            "type": "string",
+            "format": "email"
+        },
+        "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+        }
+    },
+    "required": ["id","email"]
+
+}

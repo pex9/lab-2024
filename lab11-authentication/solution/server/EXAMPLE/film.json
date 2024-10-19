@@ -1,0 +1,9 @@
+{
+    "$schema": "../JSON_SCHEMA/film_schema.json",
+    "id": 1,
+    "title": "The Shawshank Redemption",
+    "owner": 1,
+    "private": true,
+    "rating": 10,
+    "favorite": true
+}

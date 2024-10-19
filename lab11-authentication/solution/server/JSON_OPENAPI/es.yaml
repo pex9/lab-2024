@@ -1,0 +1,767 @@
+openapi: 3.0.3
+info:
+  title: FILM Management>
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: films
+    description: the set of all the films
+  - name: films/private
+    description: the set of all the private films of the logged-in user
+  - name: 'films/private/{filmId}'
+    description: the private film with ID filmId
+  - name: films/public
+    description: the set of all the public films
+  - name: films/public/invited
+    description: the set of the public films that the logged-in user has been invited to review
+  - name: 'films/public/{filmId}'
+    description: the public film with ID filmId
+  - name: 'films/public/{filmId}/reviews'
+    description: the reviews issued for the public film with ID filmId
+  - name: 'films/public/{filmId}/reviews/{reviewerId}'
+    description: the review issued to the user with ID reviewerId for the public film with ID filmId
+  - name: films/public/assignments
+    description: the assignments of review invitations to users
+  - name: users
+    description: the set of all the users
+  - name: users/authenticator
+    description: the authenticator
+  - name: 'users/{userId}'
+    description: the user with ID userId
+paths:
+  '/api/films':
+    post:
+      tags:
+        - films
+      security:
+        - cookieAuth: []
+      summary: Create a new film
+      description: A new film is created by the authenticated user.
+      operationId: createFilm
+      requestBody:
+        description: Representation of the film to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Film'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/private':
+    get :
+      tags:
+        - films/private
+      security:
+        - cookieAuth: []
+      summary: Get all films
+      description: Get all films created by the authenticated user.
+      operationId: getFilms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Film'
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/private/{id}':
+    get:
+      tags: 
+        - 'films/private/{filmId}'
+      security:
+        - cookieAuth: []
+      summary: Get a film
+      description: Get the film with the specified identifier created by the authenticated user.
+      operationId: getFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the film to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    put:
+      tags: 
+        - 'films/private/{filmId}'
+      security:
+        - cookieAuth: []
+      summary: Update a film
+      description: Update the film with the specified identifier created by the authenticated user.
+      operationId: updateFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the film to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Representation of the film to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Film'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    delete:
+      tags: 
+        - 'films/private/{filmId}'
+      security:
+        - cookieAuth: []
+      summary: Delete a film
+      description: Delete the film with the specified identifier created by the authenticated user.
+      operationId: deleteFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the film to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal
+  '/api/films/public':
+    get:
+      tags:
+        - films/public
+      summary: Get all public films
+      description: Get all public films.
+      operationId: getPublicFilms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Film'
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/{id}':
+    get:
+      tags:
+        - 'films/public/{filmId}'
+      summary: Get a public film
+      description: Get the public film with the specified identifier.
+      operationId: getPublicFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/invited':
+    get:
+      tags:
+        - films/public/invited
+      security:
+        - cookieAuth: []
+      summary: Get all public films invited to review
+      description: Get all public films that the authenticated user has been invited to review.
+      operationId: getInvitedPublicFilms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Film'
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/invited/{id}':
+    get:
+      tags:
+        - 'films/public/{filmId}'
+      security:
+        - cookieAuth: []
+      summary: Get a public film invited to review
+      description: Get the public film with the specified identifier that the authenticated user has been invited to review.
+      operationId: getInvitedPublicFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    put: 
+      tags:
+        - 'films/public/{filmId}'
+      security:
+        - cookieAuth: []
+      summary: Update a public film invited to review
+      description: Update the public film with the specified identifier that the authenticated user has been invited to review.
+      operationId: updateInvitedPublicFilm
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Representation of the public film to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Film'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/{id}/reviews':
+    post: 
+      tags:
+        - films/public/{filmId}/reviews
+      security:
+        - cookieAuth: []
+      summary: Create a review
+      description: Create a review for the public film with the specified identifier.
+      operationId: createReview
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film for which the review is to be created
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Representation of the review to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    get:
+      tags:
+        - 'films/public/{filmId}/reviews'
+      summary: Get all reviews
+      description: Get all reviews issued for the public film with the specified identifier.
+      operationId: getReviews
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film for which reviews are to be retrieved
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/{id}/reviews/{reviewerId}':
+    get:
+      tags:
+        - 'films/public/{filmId}/reviews/{reviewerId}'
+      summary: Get a review
+      description: Get the review issued to the user with the specified identifier for the public film with the specified identifier.
+      operationId: getReview
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film for which the review is to be retrieved
+          required: true
+          schema:
+            type: integer
+        - name: reviewerId
+          in: path
+          description: Unique identifier of the user for which the review is to be retrieved
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    put: 
+      tags:
+        - 'films/public/{filmId}/reviews/{reviewerId}'
+      security:
+        - cookieAuth: []
+      summary: Update a review
+      description: Update the review issued to the user with the specified identifier for the public film with the specified identifier.
+      operationId: updateReview
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the public film for which the review is to be updated
+          required: true
+          schema:
+            type: integer
+        - name: reviewerId
+          in: path
+          description: Unique identifier of the user for which the review is to be updated
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Representation of the review to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/films/public/assignments':
+    post:
+      tags:
+        - films/public/assignments
+      security:
+        - cookieAuth: []
+      summary: Assign automatically review invitations for the unassigned public films owned by the authenticated user in a balanced manner
+      description: >-
+        The films owned by the authenticated user who performed the request and that are not assigned to any user for review, are automatically assigned to the
+        users of the service in a balanced manner. Only authenticated users can make this request.
+      operationId: assignReviewBalanced
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    filmId:
+                     type: integer
+                    reviewerId:
+                      type: integer
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/users':
+    get:
+      tags:
+        - users
+      summary: Get all users
+      description: Get all users.
+      operationId: getUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/users/authenticator':
+    post:
+      tags:
+        - users/authenticator
+      summary: Authenticate a user
+      description: Authenticate a user.
+      operationId: authenticateUser
+      requestBody:
+        description: Representation of the user to be authenticated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+  '/api/users/{id}':
+    get:
+      tags:
+        - 'users/{userId}'
+      summary: Get a user
+      description: Get the user with the specified identifier.
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the user to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    put:
+      tags:
+        - 'users/{userId}'
+      summary: Update a user
+      description: Update the user with the specified identifier.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the user to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Representation of the user to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+    delete:
+      tags:
+        - 'users/{userId}'
+      summary: Delete a user
+      description: Delete the user with the specified identifier.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the user to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+
+components:
+  schemas:
+    User:
+      description: Schema for User data structures
+      type: object
+      additionalProperties: false
+      properties:
+        $schema:
+          type: string
+          description: Path to the JSON Schema to use for the validation of the JSON data structure describing the user
+        id:
+          type: integer
+          description: Unique identifier for the user
+        email:
+          type: string
+          format: email
+          description: User email
+        name:
+          type: string
+          description: Username
+        password:
+          type: string
+          minLength: 6
+          maxLength: 20
+          description: User password
+        self:
+          type: string
+          format: uri
+      required:
+        - email
+
+    Film:
+      description: Schema for Film data structures
+      type: object
+      additionalProperties: false
+      properties:
+        $schema:
+          type: string
+          description: Path to the JSON Schema to use for the validation of the JSON data structure describing the film
+        id:
+          type: integer
+          description: Unique identifier for the film data structure
+        title:
+          type: string
+          description: Textual title of the film
+        owner:
+          type: integer
+          description: Unique identifier of the film data structure owner
+        private:
+          type: boolean
+          description: True if only the owner of the film data structure can access it, false otherwise
+          default: true
+        watchDate:
+          type: string
+          format: date
+          description: The date when the film was watched by the owner
+        rating:
+          type: integer
+          description: The rating the owner has given to the film
+          minimum: 1
+          maximum: 10
+        favorite:
+          type: boolean
+          description: True if the film is among the favorite ones of the owner, false otherwise
+          default: false
+        self:
+          type: string
+          format: uri
+      required:
+        - title
+        - owner
+        - private
+
+    Review:
+      description: Schema for Review data structures
+      type: object
+      additionalProperties: false
+      properties:
+        $schema:
+          type: string
+          description: Path to the JSON Schema to use for the validation of the JSON data structure describing the review
+        filmId:
+          type: integer
+          description: Unique identifier of the film for which a review invitation has been issued
+        reviewerId:
+          type: integer
+          description: Unique identifier of the user who has received the review invitation
+        completed:
+          type: boolean
+          description: True if the review has been completed, false otherwise
+          default: false
+        reviewDate:
+          type: string
+          format: date
+          description: The date when the review was completed by the invited user
+        rating:
+          type: integer
+          description: The rating the reviewer has given to the film
+          minimum: 1
+          maximum: 10
+        review:
+          type: string
+          description: A textual description of the review
+          maxLength: 1000
+        self:
+          type: string
+          format: uri
+      required:
+        - filmId
+        - reviewerId
+
+  securitySchemes:
+    cookieAuth:
+      description: JWT to identify the authenticated user.
+      type: apiKey
+      in: cookie
+      name: connect.sid
