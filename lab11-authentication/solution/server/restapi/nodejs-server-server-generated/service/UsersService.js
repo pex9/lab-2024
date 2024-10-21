@@ -1,6 +1,7 @@
 'use strict';
-
-
+const db = require('../db');
+const User = require('../components/user');
+const bcrypt = require('bcrypt');
 /**
  * Get all users
  * Get all users.
@@ -8,28 +9,20 @@
  * returns List
  **/
 exports.getUsers = function() {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "password" : "password",
-  "$schema" : "$schema",
-  "name" : "name",
-  "self" : "http://example.com/aeiou",
-  "id" : 0,
-  "email" : ""
-}, {
-  "password" : "password",
-  "$schema" : "$schema",
-  "name" : "name",
-  "self" : "http://example.com/aeiou",
-  "id" : 0,
-  "email" : ""
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT id, name, email FROM users";
+    db.all(sql, [], (err, rows) => {
+        if (err) {
+            reject(err);
+        } else {
+            if (rows.length === 0)
+                 resolve(undefined);
+            else {
+                let users = rows.map((row) => createUser(row));
+                resolve(users);
+            }
+        }
+    });
   });
 }
 
@@ -40,32 +33,7 @@ exports.getUsers = function() {
  * body User Representation of the user to be authenticated
  * returns User
  **/
-exports.authenticateUser = function(body) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "password" : "password",
-  "$schema" : "$schema",
-  "name" : "name",
-  "self" : "http://example.com/aeiou",
-  "id" : 0,
-  "email" : ""
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-/**
- * Delete a user
- * Delete the user with the specified identifier.
- *
- * id Integer Unique identifier of the user to delete
- * no response value expected for this operation
- **/
-exports.deleteUser = function(id) {
+exports.authenticateUser = function(body,type) {
   return new Promise(function(resolve, reject) {
     resolve();
   });
@@ -80,49 +48,51 @@ exports.deleteUser = function(id) {
  * returns User
  **/
 exports.getUser = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "password" : "password",
-  "$schema" : "$schema",
-  "name" : "name",
-  "self" : "http://example.com/aeiou",
-  "id" : 0,
-  "email" : ""
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT id, name, email FROM users WHERE id = ?";
+    db.get(sql, [id], (err, row) => {
+        if (err) {
+            reject(err);
+        } else {
+            if (row === undefined)
+                resolve(undefined);
+            else {
+                let user = createUser(row);
+                resolve(user);
+            }
+        }
+    });
   });
 }
+exports.getUserByEmail = function (email) {
+  return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM users WHERE email = ?";
+      db.all(sql, [email], (err, rows) => {
+          if (err) 
+              reject(err);
+          else if (rows.length === 0)
+              resolve(undefined);
+          else{
+              const user = createUser(rows[0]);
+              resolve(user);
+          }
+      });
+  });
+};
 
 
 /**
- * Update a user
- * Update the user with the specified identifier.
- *
- * body User Representation of the user to be updated
- * id Integer Unique identifier of the user to update
- * returns User
- **/
-exports.updateUser = function(body,id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "password" : "password",
-  "$schema" : "$schema",
-  "name" : "name",
-  "self" : "http://example.com/aeiou",
-  "id" : 0,
-  "email" : ""
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+ * Utility functions
+ */
 
+const createUser = function (row) {
+  const id = row.id;
+  const name = row.name;
+  const email = row.email;
+  const hash = row.hash;
+  return new User(id, name, email, hash);
+}
+exports.checkPassword = function(user, password){
+  let hash = bcrypt.hashSync(password, 10);
+  return bcrypt.compareSync(password, user.hash);
+}
